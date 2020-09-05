@@ -75,7 +75,7 @@ def tinyMazeSearch(problem):
 def _graphSearch(problem: SearchProblem, fringe: util.Stack):
 
     """
-    Fringe items are tuples of form (path, node, cost, cost+h) where
+    Fringe items are tuples of form (path, node) where
     path is a list of directions e.g. ["North", "West"]
     node is the coords of the current node e.g. (5,4)
     cost is how much it took to get here
@@ -84,7 +84,6 @@ def _graphSearch(problem: SearchProblem, fringe: util.Stack):
     closed set items are tuples that are the coords of nodes
     """
 
-    final_path = []
     closed = set()
 
     fringe.push(([], problem.getStartState()))
@@ -124,20 +123,18 @@ def depthFirstSearch(problem):
 
     return _graphSearch(problem, util.Stack())
 
-    util.raiseNotDefined()
-
+4
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
 
     return _graphSearch(problem, util.Queue())
 
-    util.raiseNotDefined()
-
+4
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return _aStar(problem, nullHeuristic, util.PriorityQueue())
 
 def nullHeuristic(state, problem=None):
     """
@@ -149,7 +146,68 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return _aStar(problem, heuristic, util.PriorityQueue())
+
+def _aStar(problem: SearchProblem, heuristic, fringe: util.PriorityQueue):
+
+    def get_path(state, start):
+    # Takes the final backstep dictionary and steps back until it has the optimal path
+        path = []
+
+        while state != start and backstep:
+
+            step = backstep.pop(state)
+
+            path = [step[2]] + path
+            state = step[1]
+
+        return path
+
+
+    closed = set()
+    # set of expanded nodes (not to visit again)
+
+    backstep = {}
+    # Keeps track of previous step to each node & best total cost so far
+    # Format: {state: (total_cost, parent_state, prev_direction)}
+
+    # Add start node to both backstep and fringe
+    fringe.push(problem.getStartState(), 0)
+    backstep[problem.getStartState()] = (0, None, None)
+
+    while not fringe.isEmpty():
+
+        curr_state = fringe.pop()
+        curr_cost = backstep[curr_state][0]
+
+        # Check for goal state
+        if problem.isGoalState(curr_state):
+            return get_path(curr_state, problem.getStartState())
+
+        if curr_state not in closed:
+            # Each node expanded at most once
+            closed.add(curr_state)
+
+            for child in problem.getSuccessors(curr_state):
+                # Do the expansion
+
+                # Obvious
+                if child[0] in closed:
+                    continue
+
+                # Add cost to child to get current optimal distance to child
+                child_cost = curr_cost + child[2]
+
+                # If there is already a better way to the child, this is false
+                if (child[0] not in backstep) or (child_cost < backstep[child[0]][0]):
+
+                    backstep[child[0]] = (child_cost, curr_state, child[1])
+                    # Adds cost, parent, and direction to backstep
+
+                    fringe.update(child[0], child_cost + heuristic(child[0], problem))
+                    # Adds child node and priority to the PQ
+
+    return 0
 
 
 # Abbreviations
