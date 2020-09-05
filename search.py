@@ -72,6 +72,40 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+def _graphSearch(problem: SearchProblem, fringe: util.Stack):
+
+    """
+    Fringe items are tuples of form (path, node, cost, cost+h) where
+    path is a list of directions e.g. ["North", "West"]
+    node is the coords of the current node e.g. (5,4)
+    cost is how much it took to get here
+    h is the heuristic (a* only)
+
+    closed set items are tuples that are the coords of nodes
+    """
+
+    final_path = []
+    closed = set()
+
+    fringe.push(([], problem.getStartState()))
+
+    while not fringe.isEmpty():
+
+        curr_path, curr_state = fringe.pop()
+
+        if problem.isGoalState(curr_state):
+            return curr_path
+
+        if curr_state not in closed:
+            closed.add(curr_state)
+            for child in problem.getSuccessors(curr_state):
+
+                fringe.push((curr_path + [child[1]], child[0]))
+
+    return 0
+
+
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -87,6 +121,9 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
+
+    return _graphSearch(problem, util.Stack())
+
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
