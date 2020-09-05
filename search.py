@@ -129,6 +129,9 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+
+    return _graphSearch(problem, util.Queue())
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
