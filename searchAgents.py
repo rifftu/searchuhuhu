@@ -391,14 +391,18 @@ def cornersHeuristic(state, problem):
         while currCorners:
             distanceToCorner = 9999999999
             closestStatic = closest
+            
+            # find the closest corner
             for c in currCorners:
                 distance = util.manhattanDistance(closestStatic, c)
                 if distance < distanceToCorner:
                     distanceToCorner = distance
                     closest = c
+            
+            # remove corner to not count it again
             currCorners.remove(closest)
             totalHeuristic += distanceToCorner
-        print(totalHeuristic)
+            
         return totalHeuristic
     return 0
 
@@ -653,7 +657,6 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        print(self.food[x][y])
         return self.food[x][y] == True
         
 
