@@ -500,88 +500,92 @@ def foodHeuristic(state, problem: FoodSearchProblem):
 
 
     """ The following gets <7k for the """
-    # sorted_foodlist = foodlist.copy()
-    # sorted_foodlist.sort(key = lambda x: util.manhattanDistance(position,x))
-    # visited = [position]
-    # total_dist = []
+    sorted_foodlist = foodlist.copy()
+    sorted_foodlist.sort(key = lambda x: util.manhattanDistance(position,x))
+    visited = []
+    total_dist = []
+
+    def closest_to_discovered(coord):
+        return min([util.manhattanDistance(coord, j) for j in visited])
+
+    while sorted_foodlist:
+        i = sorted_foodlist.pop(0)
+        if not visited:
+            dist = util.manhattanDistance(i, position)
+        else:
+            dist = min([util.manhattanDistance(i, j) for j in visited])
+
+        visited.append(i)
+
+
+
+        total_dist.append(dist)
+
+        sorted_foodlist.sort(key=closest_to_discovered)
+
+    return sum(total_dist)
+
+    # def min_this(coord, others):
+    #     if len(others) == 0 or len(others) == 1: return 0
+    #     manhat = []
+    #     for b in others:
+    #         if b == coord: continue
+    #         a = abs(b[0] - coord[0])
+    #         b = abs(b[1] - coord[1])
+    #         manhat.append(a + b)
+    #     if len(manhat) == 0: return 0
+    #     return min(manhat)
     #
-    # def closest_to_discovered(coord):
-    #     return min([util.manhattanDistance(coord, j) for j in visited])
+    # def getClosestv0():
+    #     if len(foodlist) == 0: return 0
     #
-    # while sorted_foodlist:
-    #     i = sorted_foodlist.pop(0)
+    #     centered_foodlist = [(b[0] - position[0], b[1] - position[1]) for b in foodlist]
     #
-    #     dist = min([util.manhattanDistance(i, j) for j in visited])
+    #     manhattan_foodlist = [abs(b[0]) + abs(b[1]) for b in centered_foodlist]
     #
-    #     visited.append(i)
+    #     min_dist = min(manhattan_foodlist)
     #
+    #     return min_dist
     #
+    # def getClosest():
     #
-    #     total_dist.append(dist)
-    #     sorted_foodlist.sort(key=closest_to_discovered)
+    #     if len(foodlist) == 0: return 0
     #
-    # return sum(total_dist)
-    def min_this(coord, others):
-        if len(others) == 0 or len(others) == 1: return 0
-        manhat = []
-        for b in others:
-            if b == coord: continue
-            a = abs(b[0] - coord[0])
-            b = abs(b[1] - coord[1])
-            manhat.append(a + b)
-        if len(manhat) == 0: return 0
-        return min(manhat)
-
-    def getClosestv0():
-        if len(foodlist) == 0: return 0
-
-        centered_foodlist = [(b[0] - position[0], b[1] - position[1]) for b in foodlist]
-
-        manhattan_foodlist = [abs(b[0]) + abs(b[1]) for b in centered_foodlist]
-
-        min_dist = min(manhattan_foodlist)
-
-        return min_dist
-
-    def getClosest():
-
-        if len(foodlist) == 0: return 0
-
-        # centered_foodlist = [(b[0] - position[0], b[1] - position[1]) for b in foodlist]
-        #
-        # manhattan_foodlist = [abs(b[0]) + abs(b[1]) for b in centered_foodlist]
-        #
-        # min_dist = min(manhattan_foodlist)
-        #
-        # for i in range(len(manhattan_foodlist)):
-        #     if manhattan_foodlist[i] == min_dist:
-        #         return min_dist, i
-        xs = [b[0] for b in foodlist]
-        ys = [b[1] for b in foodlist]
-
-        x_travel_left = abs(min(xs) - position[0])
-        x_travel_right = abs(max(xs) - position[0])
-
-        y_travel_up = abs(min(ys) - position[1])
-        y_travel_down = abs(min(ys) - position[1])
-
-        return min(x_travel_left, x_travel_right) + min(y_travel_up, y_travel_down)
-
-    def end_to_end():
-
-        if len(foodlist) == 0: return 0
-
-        xs = [b[0] for b in foodlist]
-        ys = [b[1] for b in foodlist]
-
-        return abs(max(xs) - min(xs)) + abs(max(ys) - min(ys))
-
-    closests = []
-    for b in foodlist:
-        closests.append(min_this(b, foodlist))
-    if len(closests) == 0:
-        return 0
-    return getClosestv0() + end_to_end()
+    #     # centered_foodlist = [(b[0] - position[0], b[1] - position[1]) for b in foodlist]
+    #     #
+    #     # manhattan_foodlist = [abs(b[0]) + abs(b[1]) for b in centered_foodlist]
+    #     #
+    #     # min_dist = min(manhattan_foodlist)
+    #     #
+    #     # for i in range(len(manhattan_foodlist)):
+    #     #     if manhattan_foodlist[i] == min_dist:
+    #     #         return min_dist, i
+    #     xs = [b[0] for b in foodlist]
+    #     ys = [b[1] for b in foodlist]
+    #
+    #     x_travel_left = abs(min(xs) - position[0])
+    #     x_travel_right = abs(max(xs) - position[0])
+    #
+    #     y_travel_up = abs(min(ys) - position[1])
+    #     y_travel_down = abs(min(ys) - position[1])
+    #
+    #     return min(x_travel_left, x_travel_right) + min(y_travel_up, y_travel_down)
+    #
+    # def end_to_end():
+    #
+    #     if len(foodlist) == 0: return 0
+    #
+    #     xs = [b[0] for b in foodlist]
+    #     ys = [b[1] for b in foodlist]
+    #
+    #     return abs(max(xs) - min(xs)) + abs(max(ys) - min(ys))
+    #
+    # closests = []
+    # for b in foodlist:
+    #     closests.append(min_this(b, foodlist))
+    # if len(closests) == 0:
+    #     return 0
+    # return getClosestv0() + end_to_end()
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
