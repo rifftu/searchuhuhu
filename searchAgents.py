@@ -295,14 +295,18 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        # state = positions, tuple of all 4 provided corners
+        return (self.startingPosition, (self.corners[0], self.corners[1], self.corners[2], self.corners[3]))
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        # checks if all corners are removed (meaning they have all been visited)
+        return state[1] == ()
 
     def getSuccessors(self, state):
         """
@@ -325,6 +329,25 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+
+            # Given code
+            x,y = state[0]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+
+            corners = list(state[1])
+
+            # if valid, successors
+            if not hitsWall:
+                if (nextx, nexty) in corners:
+                    #remove coordinate from tuple if corner
+                    corners.remove((nextx, nexty))
+                cornersTuple = tuple(corners)
+                # new state
+                newState = ((nextx, nexty), cornersTuple)
+                # append to successors
+                successors.append((newState, action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -360,7 +383,22 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    #return 0 # Default to trivial solution
+    currCorners = list(state[1])
+    if currCorners:
+        totalHeuristic = 0
+        while currCorners:
+            closestCorner, distanceToCorner = currCorners[0], util.manhattanDistance(state[0], currCorners[0])
+            for c in currCorners:
+                distance = util.manhattanDistance(state[0], c)
+                if distance < distanceToCorner:
+                    distanceToCorner = distance
+                    closestCorner = c
+            currCorners.remove(closestCorner)
+            totalHeuristic += distanceToCorner
+        return totalHeuristic
+    return 0
+
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
